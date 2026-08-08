@@ -3,40 +3,34 @@
 ========================================== */
 
 
-/* ==========================================
-   GAME VARIABLES
-========================================== */
+/* GAME SETTINGS */
+
+const TOTAL_QUESTIONS = 20;
+const QUESTION_TIME = 15;
+const MAX_FAILURES = 3;
+
+
+/* GAME VARIABLES */
 
 let currentLevel = "";
-
 let currentQuestion = 0;
 
-let totalQuestions = 20;
-
 let score = 0;
-
 let correctAnswers = 0;
-
 let wrongAnswers = 0;
-
 let timeouts = 0;
-
 let failures = 0;
 
-let timeLeft = 15;
+let correctAnswer = 0;
+let timeLeft = QUESTION_TIME;
 
-let timerInterval;
-
-let correctAnswer;
-
+let timerInterval = null;
 let questionLocked = false;
 
 
-/* ==========================================
-   DIFFICULTY
-========================================== */
+/* LEVEL RANGES */
 
-const levels = {
+const levelRanges = {
 
     easy: {
         min: 1,
@@ -57,70 +51,14 @@ const levels = {
 
 
 /* ==========================================
-   AUDIO
-========================================== */
-
-const audioContext =
-    new (
-        window.AudioContext ||
-        window.webkitAudioContext
-    )();
-
-
-function beep() {
-
-    if (audioContext.state === "suspended") {
-        audioContext.resume();
-    }
-
-
-    const oscillator =
-        audioContext.createOscillator();
-
-    const gain =
-        audioContext.createGain();
-
-
-    oscillator.connect(gain);
-
-    gain.connect(
-        audioContext.destination
-    );
-
-
-    oscillator.frequency.value = 800;
-
-
-    gain.gain.setValueAtTime(
-        0.2,
-        audioContext.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-        0.01,
-        audioContext.currentTime + 0.15
-    );
-
-
-    oscillator.start();
-
-    oscillator.stop(
-        audioContext.currentTime + 0.15
-    );
-
-}
-
-
-/* ==========================================
    SCREEN CONTROL
 ========================================== */
 
-function hideAllScreens() {
+function hideScreens() {
 
     document
         .querySelectorAll(".screen")
-        .forEach(screen => {
+        .forEach(function(screen) {
 
             screen.classList.add("hidden");
 
@@ -131,7 +69,7 @@ function hideAllScreens() {
 
 function showLevels() {
 
-    hideAllScreens();
+    hideScreens();
 
     document
         .getElementById("level-screen")
@@ -148,7 +86,7 @@ function selectLevel(level) {
 
     currentLevel = level;
 
-    hideAllScreens();
+    hideScreens();
 
     document
         .getElementById("instruction-screen")
@@ -175,19 +113,17 @@ function startQuiz() {
 
     failures = 0;
 
+    correctAnswer = 0;
 
-    document
-        .getElementById("score")
-        .textContent = "0";
-
-
-    document
-        .getElementById("failures")
-        .textContent = "0";
+    clearInterval(timerInterval);
 
 
-    hideAllScreens();
+    document.getElementById("score").textContent = "0";
 
+    document.getElementById("failures").textContent = "0";
+
+
+    hideScreens();
 
     document
         .getElementById("quiz-screen")
@@ -206,36 +142,24 @@ function startQuiz() {
 function randomNumber(min, max) {
 
     return Math.floor(
-        Math.random() *
-        (max - min + 1)
+        Math.random() * (max - min + 1)
     ) + min;
 
 }
 
 
 /* ==========================================
-   CREATE QUESTION
+   CREATE MATH QUESTION
 ========================================== */
 
 function createQuestion() {
 
-    const range =
-        levels[currentLevel];
+    const range = levelRanges[currentLevel];
 
+    let num1;
+    let num2;
 
-    let num1 =
-        randomNumber(
-            range.min,
-            range.max
-        );
-
-
-    let num2 =
-        randomNumber(
-            range.min,
-            range.max
-        );
-
+    let operator;
 
     const operators = [
         "+",
@@ -245,7 +169,7 @@ function createQuestion() {
     ];
 
 
-    const operator =
+    operator =
         operators[
             randomNumber(
                 0,
@@ -258,6 +182,18 @@ function createQuestion() {
 
     if (operator === "+") {
 
+        num1 =
+            randomNumber(
+                range.min,
+                range.max
+            );
+
+        num2 =
+            randomNumber(
+                range.min,
+                range.max
+            );
+
         correctAnswer =
             num1 + num2;
 
@@ -268,16 +204,17 @@ function createQuestion() {
 
     else if (operator === "-") {
 
-        if (num2 > num1) {
+        num1 =
+            randomNumber(
+                range.min,
+                range.max
+            );
 
-            const temp = num1;
-
-            num1 = num2;
-
-            num2 = temp;
-
-        }
-
+        num2 =
+            randomNumber(
+                range.min,
+                num1
+            );
 
         correctAnswer =
             num1 - num2;
@@ -288,6 +225,23 @@ function createQuestion() {
     /* MULTIPLICATION */
 
     else if (operator === "×") {
+
+        /*
+            Use smaller multipliers so
+            the questions remain reasonable.
+        */
+
+        num1 =
+            randomNumber(
+                1,
+                currentLevel === "easy" ? 10 : 12
+            );
+
+        num2 =
+            randomNumber(
+                1,
+                currentLevel === "easy" ? 10 : 12
+            );
 
         correctAnswer =
             num1 * num2;
@@ -300,115 +254,38 @@ function createQuestion() {
     else {
 
         /*
-            Generate a clean
-            whole-number division.
+            Create division using:
+            answer × divisor = dividend
+
+            This guarantees a whole number.
         */
 
-        num2 =
+        let divisor =
             randomNumber(2, 10);
 
-
         let answer =
-            randomNumber(
-                2,
-                10
-            );
-
+            randomNumber(2, 10);
 
         num1 =
-            num2 * answer;
+            divisor * answer;
 
+        num2 =
+            divisor;
 
-        /*
-            Keep numbers reasonable.
-        */
-
-        if (
-            num1 < range.min ||
-            num1 > range.max
-        ) {
-
-            const possibleAnswers = [];
-
-
-            for (
-                let divisor = 2;
-                divisor <= 10;
-                divisor++
-            ) {
-
-                for (
-                    let result = 1;
-                    result <= 10;
-                    result++
-                ) {
-
-                    const value =
-                        divisor * result;
-
-
-                    if (
-                        value >= range.min &&
-                        value <= range.max
-                    ) {
-
-                        possibleAnswers.push({
-                            number: value,
-                            divisor: divisor,
-                            answer: result
-                        });
-
-                    }
-
-                }
-
-            }
-
-
-            if (
-                possibleAnswers.length > 0
-            ) {
-
-                const item =
-                    possibleAnswers[
-                        randomNumber(
-                            0,
-                            possibleAnswers.length - 1
-                        )
-                    ];
-
-
-                num1 = item.number;
-
-                num2 = item.divisor;
-
-                correctAnswer =
-                    item.answer;
-
-            }
-
-            else {
-
-                correctAnswer =
-                    Math.floor(
-                        num1 / num2
-                    );
-
-            }
-
-        }
-
-        else {
-
-            correctAnswer =
-                num1 / num2;
-
-        }
+        correctAnswer =
+            answer;
 
     }
 
 
-    return `${num1} ${operator} ${num2} = ?`;
+    return (
+        num1 +
+        " " +
+        operator +
+        " " +
+        num2 +
+        " = ?"
+    );
 
 }
 
@@ -419,7 +296,7 @@ function createQuestion() {
 
 function generateOptions() {
 
-    const options = [];
+    let options = [];
 
     options.push(correctAnswer);
 
@@ -427,56 +304,52 @@ function generateOptions() {
     while (options.length < 4) {
 
         let difference =
-            randomNumber(
-                1,
-                10
-            );
-
+            randomNumber(1, 10);
 
         let wrongAnswer;
 
 
-        if (
-            Math.random() > 0.5
-        ) {
+        if (Math.random() < 0.5) {
 
             wrongAnswer =
-                correctAnswer +
-                difference;
+                correctAnswer + difference;
 
-        }
-
-        else {
+        } else {
 
             wrongAnswer =
-                correctAnswer -
-                difference;
+                correctAnswer - difference;
 
         }
 
 
         /*
-            Avoid duplicate answers.
+            Answers should not be negative.
+        */
+
+        if (wrongAnswer < 0) {
+
+            wrongAnswer =
+                correctAnswer + difference;
+
+        }
+
+
+        /*
+            Avoid duplicates.
         */
 
         if (
-            !options.includes(
-                wrongAnswer
-            )
+            !options.includes(wrongAnswer)
         ) {
 
-            options.push(
-                wrongAnswer
-            );
+            options.push(wrongAnswer);
 
         }
 
     }
 
 
-    /*
-        Shuffle options.
-    */
+    /* SHUFFLE */
 
     for (
         let i = options.length - 1;
@@ -484,21 +357,17 @@ function generateOptions() {
         i--
     ) {
 
-        const j =
+        let j =
             Math.floor(
-                Math.random() *
-                (i + 1)
+                Math.random() * (i + 1)
             );
 
 
-        [
-            options[i],
-            options[j]
-        ] =
-        [
-            options[j],
-            options[i]
-        ];
+        let temp = options[i];
+
+        options[i] = options[j];
+
+        options[j] = temp;
 
     }
 
@@ -517,13 +386,19 @@ function nextQuestion() {
     clearInterval(timerInterval);
 
 
-    /*
-        Check whether quiz is complete.
-    */
+    if (
+        currentQuestion >= TOTAL_QUESTIONS
+    ) {
+
+        finishQuiz();
+
+        return;
+
+    }
+
 
     if (
-        currentQuestion >= totalQuestions ||
-        failures >= 3
+        failures >= MAX_FAILURES
     ) {
 
         finishQuiz();
@@ -535,7 +410,6 @@ function nextQuestion() {
 
     questionLocked = false;
 
-
     currentQuestion++;
 
 
@@ -545,14 +419,14 @@ function nextQuestion() {
         currentQuestion;
 
 
-    const question =
+    const questionText =
         createQuestion();
 
 
     document
         .getElementById("question")
         .textContent =
-        question;
+        questionText;
 
 
     const options =
@@ -560,40 +434,35 @@ function nextQuestion() {
 
 
     const optionsContainer =
-        document.getElementById(
-            "options"
-        );
+        document.getElementById("options");
 
 
     optionsContainer.innerHTML = "";
 
 
-    options.forEach(option => {
+    options.forEach(function(option) {
 
         const button =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
 
-        button.className =
-            "option";
+        button.className = "option";
 
-
-        button.textContent =
-            option;
+        button.textContent = option;
 
 
         button.onclick =
-            () => selectAnswer(
-                option,
-                button
-            );
+            function() {
+
+                selectAnswer(
+                    option,
+                    button
+                );
+
+            };
 
 
-        optionsContainer.appendChild(
-            button
-        );
+        optionsContainer.appendChild(button);
 
     });
 
@@ -628,28 +497,21 @@ function selectAnswer(
     clearInterval(timerInterval);
 
 
-    const optionButtons =
-        document.querySelectorAll(
-            ".option"
-        );
+    const buttons =
+        document.querySelectorAll(".option");
 
 
-    optionButtons.forEach(button => {
+    buttons.forEach(function(button) {
 
-        button.classList.add(
-            "disabled"
-        );
+        button.classList.add("disabled");
 
 
         if (
-            Number(
-                button.textContent
-            ) === correctAnswer
+            Number(button.textContent) ===
+            Number(correctAnswer)
         ) {
 
-            button.classList.add(
-                "correct"
-            );
+            button.classList.add("correct");
 
         }
 
@@ -672,29 +534,19 @@ function selectAnswer(
             score;
 
 
-        document
-            .getElementById("quiz-message")
-            .textContent =
-            "Correct! ✓";
+        showMessage(
+            "Correct! ✓",
+            true
+        );
 
-
-        document
-            .getElementById("quiz-message")
-            .style.color =
-            "#4ade80";
-
-    }
-
-    else {
+    } else {
 
         wrongAnswers++;
 
         failures++;
 
 
-        selectedButton.classList.add(
-            "wrong"
-        );
+        selectedButton.classList.add("wrong");
 
 
         document
@@ -703,29 +555,24 @@ function selectAnswer(
             failures;
 
 
-        document
-            .getElementById("quiz-message")
-            .textContent =
-            `Wrong! Correct answer: ${correctAnswer}`;
-
-
-        document
-            .getElementById("quiz-message")
-            .style.color =
-            "#f87171";
+        showMessage(
+            "Wrong! Correct answer: " +
+            correctAnswer,
+            false
+        );
 
     }
 
 
-    setTimeout(() => {
+    setTimeout(function() {
 
-        if (failures >= 3) {
+        if (
+            failures >= MAX_FAILURES
+        ) {
 
             finishQuiz();
 
-        }
-
-        else {
+        } else {
 
             nextQuestion();
 
@@ -742,23 +589,24 @@ function selectAnswer(
 
 function startTimer() {
 
-    timeLeft = 15;
+    clearInterval(timerInterval);
 
+    timeLeft = QUESTION_TIME;
 
     updateTimer();
 
 
     timerInterval =
-        setInterval(() => {
+        setInterval(function() {
 
             timeLeft--;
-
 
             updateTimer();
 
 
             /*
-                Sound from 6 seconds.
+                Play sound during:
+                6, 5, 4, 3, 2, 1
             */
 
             if (
@@ -766,19 +614,16 @@ function startTimer() {
                 timeLeft > 0
             ) {
 
-                beep();
+                playBeep();
 
             }
 
 
             if (timeLeft <= 0) {
 
-                clearInterval(
-                    timerInterval
-                );
+                clearInterval(timerInterval);
 
-
-                timeOut();
+                handleTimeout();
 
             }
 
@@ -788,15 +633,13 @@ function startTimer() {
 
 
 /* ==========================================
-   UPDATE TIMER
+   TIMER DISPLAY
 ========================================== */
 
 function updateTimer() {
 
     const timer =
-        document.getElementById(
-            "timer"
-        );
+        document.getElementById("timer");
 
 
     timer.textContent =
@@ -804,7 +647,7 @@ function updateTimer() {
 
 
     const percentage =
-        (timeLeft / 15) * 100;
+        (timeLeft / QUESTION_TIME) * 100;
 
 
     document
@@ -821,22 +664,16 @@ function updateTimer() {
 
     if (timeLeft <= 6) {
 
-        timer.classList.add(
-            "warning"
-        );
+        timer.classList.add("warning");
 
     }
 
 
     if (timeLeft <= 3) {
 
-        timer.classList.remove(
-            "warning"
-        );
+        timer.classList.remove("warning");
 
-        timer.classList.add(
-            "danger"
-        );
+        timer.classList.add("danger");
 
     }
 
@@ -844,10 +681,10 @@ function updateTimer() {
 
 
 /* ==========================================
-   TIME OUT
+   TIMEOUT
 ========================================== */
 
-function timeOut() {
+function handleTimeout() {
 
     if (questionLocked) {
         return;
@@ -868,61 +705,158 @@ function timeOut() {
         failures;
 
 
-    const optionButtons =
-        document.querySelectorAll(
-            ".option"
-        );
+    const buttons =
+        document.querySelectorAll(".option");
 
 
-    optionButtons.forEach(button => {
+    buttons.forEach(function(button) {
 
-        button.classList.add(
-            "disabled"
-        );
+        button.classList.add("disabled");
 
 
         if (
-            Number(
-                button.textContent
-            ) === correctAnswer
+            Number(button.textContent) ===
+            Number(correctAnswer)
         ) {
 
-            button.classList.add(
-                "correct"
-            );
+            button.classList.add("correct");
 
         }
 
     });
 
 
-    document
-        .getElementById("quiz-message")
-        .textContent =
-        `Time's up! Correct answer: ${correctAnswer}`;
+    showMessage(
+        "Time's up! Correct answer: " +
+        correctAnswer,
+        false
+    );
 
 
-    document
-        .getElementById("quiz-message")
-        .style.color =
-        "#f87171";
+    setTimeout(function() {
 
-
-    setTimeout(() => {
-
-        if (failures >= 3) {
+        if (
+            failures >= MAX_FAILURES
+        ) {
 
             finishQuiz();
 
-        }
-
-        else {
+        } else {
 
             nextQuestion();
 
         }
 
     }, 1000);
+
+}
+
+
+/* ==========================================
+   MESSAGE
+========================================== */
+
+function showMessage(
+    text,
+    success
+) {
+
+    const message =
+        document.getElementById(
+            "quiz-message"
+        );
+
+
+    message.textContent = text;
+
+
+    if (success) {
+
+        message.style.color =
+            "#4ade80";
+
+    } else {
+
+        message.style.color =
+            "#f87171";
+
+    }
+
+}
+
+
+/* ==========================================
+   BEEP SOUND
+========================================== */
+
+function playBeep() {
+
+    /*
+        Create audio only when needed.
+        This avoids browser autoplay problems.
+    */
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        if (!AudioContext) {
+            return;
+        }
+
+
+        const audio =
+            new AudioContext();
+
+
+        const oscillator =
+            audio.createOscillator();
+
+
+        const gain =
+            audio.createGain();
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audio.destination
+        );
+
+
+        oscillator.frequency.value =
+            800;
+
+
+        gain.gain.setValueAtTime(
+            0.15,
+            audio.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.01,
+            audio.currentTime + 0.12
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audio.currentTime + 0.12
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Audio unavailable."
+        );
+
+    }
 
 }
 
@@ -936,19 +870,26 @@ function finishQuiz() {
     clearInterval(timerInterval);
 
 
-    const questionsAttempted =
-        currentQuestion;
+    let attempted =
+        correctAnswers +
+        wrongAnswers +
+        timeouts;
 
 
-    const accuracy =
-        questionsAttempted > 0
-            ? Math.round(
+    let accuracy = 0;
+
+
+    if (attempted > 0) {
+
+        accuracy =
+            Math.round(
                 (
                     correctAnswers /
-                    questionsAttempted
+                    attempted
                 ) * 100
-            )
-            : 0;
+            );
+
+    }
 
 
     document
@@ -981,34 +922,31 @@ function finishQuiz() {
         accuracy + "%";
 
 
-    hideAllScreens();
+    hideScreens();
 
 
     document
         .getElementById("result-screen")
-        .classList.remove(
-            "hidden"
-        );
+        .classList.remove("hidden");
 
 }
 
 
 /* ==========================================
-   QUIT QUIZ
+   QUIT
 ========================================== */
 
 function quitQuiz() {
 
-    clearInterval(timerInterval);
-
-
-    const confirmQuit =
+    const answer =
         confirm(
             "Are you sure you want to quit the quiz?"
         );
 
 
-    if (confirmQuit) {
+    if (answer) {
+
+        clearInterval(timerInterval);
 
         returnHome();
 
@@ -1026,26 +964,17 @@ function returnHome() {
     clearInterval(timerInterval);
 
 
-    currentQuestion = 0;
+    hideScreens();
 
-    score = 0;
 
-    failures = 0;
+    document
+        .getElementById("home-screen")
+        .classList.remove("hidden");
 
 
     document
         .getElementById("score")
         .textContent =
         "0";
-
-
-    hideAllScreens();
-
-
-    document
-        .getElementById("home-screen")
-        .classList.remove(
-            "hidden"
-        );
 
 }
