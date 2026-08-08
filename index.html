@@ -33,17 +33,12 @@
     </header>
 
 
-    <!-- =========================
-         HOME SCREEN
-    ========================== -->
-
+    <!-- HOME -->
     <section id="home-screen" class="screen">
 
         <div class="hero">
 
-            <span class="badge">
-                ABUMEENAT MATH QUIZ
-            </span>
+            <span class="badge">ABUMEENAT MATH QUIZ</span>
 
             <h2>
                 Test Your
@@ -51,15 +46,11 @@
             </h2>
 
             <p>
-                Answer 20 mathematical questions.
-                You have 15 seconds for each question
-                and only 3 failures are allowed.
+                Answer 20 questions. You have 15 seconds
+                for each question and 3 failures are allowed.
             </p>
 
-            <button
-                class="primary-btn"
-                onclick="showLevels()"
-            >
+            <button class="primary-btn" onclick="showLevels()">
                 Start Quiz
             </button>
 
@@ -68,39 +59,29 @@
     </section>
 
 
-    <!-- =========================
-         LEVEL SCREEN
-    ========================== -->
-
+    <!-- LEVELS -->
     <section id="level-screen" class="screen hidden">
 
         <div class="section-heading">
 
-            <span class="badge">
-                STEP 1
-            </span>
+            <span class="badge">CHOOSE LEVEL</span>
 
-            <h2>Choose Your Level</h2>
+            <h2>Select Your Level</h2>
 
-            <p>
-                Select the difficulty you want to attempt.
-            </p>
+            <p>Choose the difficulty you want to play.</p>
 
         </div>
 
 
         <div class="levels">
 
-            <button
-                class="level-card"
-                onclick="selectLevel('easy')"
-            >
+            <button class="level-card" onclick="selectLevel('easy')">
 
                 <span class="level-number">01</span>
 
                 <div>
                     <h3>Easy</h3>
-                    <p>Numbers from 1 – 20</p>
+                    <p>Numbers 1 – 20</p>
                     <small>Basic calculations</small>
                 </div>
 
@@ -109,16 +90,13 @@
             </button>
 
 
-            <button
-                class="level-card"
-                onclick="selectLevel('intermediate')"
-            >
+            <button class="level-card" onclick="selectLevel('intermediate')">
 
                 <span class="level-number">02</span>
 
                 <div>
                     <h3>Intermediate</h3>
-                    <p>Numbers from 20 – 30</p>
+                    <p>Numbers 20 – 30</p>
                     <small>Moderate calculations</small>
                 </div>
 
@@ -127,16 +105,13 @@
             </button>
 
 
-            <button
-                class="level-card"
-                onclick="selectLevel('complex')"
-            >
+            <button class="level-card" onclick="selectLevel('complex')">
 
                 <span class="level-number">03</span>
 
                 <div>
                     <h3>Complex</h3>
-                    <p>Numbers from 30 – 50</p>
+                    <p>Numbers 30 – 50</p>
                     <small>Advanced calculations</small>
                 </div>
 
@@ -149,19 +124,14 @@
     </section>
 
 
-    <!-- =========================
-         INSTRUCTION SCREEN
-    ========================== -->
-
+    <!-- INSTRUCTIONS -->
     <section id="instruction-screen" class="screen hidden">
 
         <div class="instructions">
 
-            <span class="badge">
-                ABUMEENAT QUIZ
-            </span>
+            <span class="badge">INSTRUCTIONS</span>
 
-            <h2>Quiz Instructions</h2>
+            <h2>How to Play</h2>
 
             <div class="instruction-list">
 
@@ -177,45 +147,21 @@
 
                 <div>
                     <strong>3</strong>
-                    <span>Failures Allowed</span>
+                    <span>Failures</span>
                 </div>
 
             </div>
 
-
             <ul>
-
-                <li>
-                    Choose the correct answer for every question.
-                </li>
-
-                <li>
-                    You have 15 seconds to answer each question.
-                </li>
-
-                <li>
-                    A wrong answer counts as one failure.
-                </li>
-
-                <li>
-                    Running out of time counts as one failure.
-                </li>
-
-                <li>
-                    The quiz ends after 3 failures.
-                </li>
-
-                <li>
-                    A sound will play during the final 6 seconds.
-                </li>
-
+                <li>Select the correct answer.</li>
+                <li>You have 15 seconds per question.</li>
+                <li>Wrong answers count as failures.</li>
+                <li>Time-outs count as failures.</li>
+                <li>Three failures end the quiz.</li>
+                <li>A sound plays during the last 6 seconds.</li>
             </ul>
 
-
-            <button
-                class="primary-btn"
-                onclick="startQuiz()"
-            >
+            <button class="primary-btn" onclick="startQuiz()">
                 Begin Quiz
             </button>
 
@@ -224,42 +170,28 @@
     </section>
 
 
-    <!-- =========================
-         QUIZ SCREEN
-    ========================== -->
-
+    <!-- QUIZ -->
     <section id="quiz-screen" class="screen hidden">
 
         <div class="quiz-top">
 
             <div>
                 <span>QUESTION</span>
-
                 <strong>
-                    <span id="question-number">1</span>
-                    / 20
+                    <span id="question-number">1</span> / 20
                 </strong>
             </div>
 
-
-            <div class="timer-area">
-
+            <div>
                 <span>TIME</span>
-
-                <div id="timer">
-                    15
-                </div>
-
+                <strong id="timer">15</strong>
             </div>
-
 
             <div>
                 <span>FAILURES</span>
-
                 <strong>
                     <span id="failures">0</span> / 3
                 </strong>
-
             </div>
 
         </div>
@@ -273,7 +205,7 @@
         <div class="question-card">
 
             <span class="question-label">
-                SOLVE THE QUESTION
+                SOLVE THIS
             </span>
 
             <h2 id="question">
@@ -283,60 +215,36 @@
         </div>
 
 
-        <!-- ANSWER OPTIONS -->
+        <div id="options" class="options"></div>
 
-        <div
-            id="options"
-            class="options"
-        ></div>
+        <p id="quiz-message" class="quiz-message"></p>
 
-
-        <p
-            id="quiz-message"
-            class="quiz-message"
-        ></p>
-
-
-        <button
-            class="quit-btn"
-            onclick="quitQuiz()"
-        >
-            Quit Quiz
+        <button class="quit-btn" onclick="quitQuiz()">
+            ← Quit Quiz
         </button>
 
     </section>
 
 
-    <!-- =========================
-         RESULT SCREEN
-    ========================== -->
-
+    <!-- RESULT -->
     <section id="result-screen" class="screen hidden">
 
         <div class="result">
 
-            <span class="badge">
-                QUIZ COMPLETED
-            </span>
+            <span class="badge">QUIZ COMPLETED</span>
 
-            <h2>Well Done!</h2>
+            <h2>Quiz Finished!</h2>
 
-            <p>
-                Here is your Abumeenat Math Quiz result.
-            </p>
+            <p>Your Abumeenat Math Quiz result.</p>
 
 
             <div class="final-score">
 
                 <span>FINAL SCORE</span>
 
-                <strong id="final-score">
-                    0
-                </strong>
+                <strong id="final-score">0</strong>
 
-                <small>
-                    / 20
-                </small>
+                <small>/ 20</small>
 
             </div>
 
@@ -366,10 +274,7 @@
             </div>
 
 
-            <button
-                class="primary-btn"
-                onclick="returnHome()"
-            >
+            <button class="primary-btn" onclick="returnHome()">
                 Take Quiz Again
             </button>
 
@@ -377,8 +282,6 @@
 
     </section>
 
-
-    <!-- FOOTER -->
 
     <footer>
         © 2026 <strong>Abumeenat</strong> · Math Quiz
