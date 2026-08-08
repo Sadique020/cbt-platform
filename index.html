@@ -4,286 +4,390 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Abumeenat Math Challenge</title>
+    <title>Abumeenat Math Quiz</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="app-container">
+<div class="app">
 
-        <!-- HEADER -->
-        <header class="header">
+    <!-- HEADER -->
+    <header class="header">
 
-            <div class="brand">
-                <div class="logo">A</div>
+        <div class="brand">
+            <div class="logo">A</div>
+
+            <div>
+                <h1>Abumeenat</h1>
+                <p>Math Quiz</p>
+            </div>
+        </div>
+
+        <div class="score-box">
+            <span>SCORE</span>
+            <strong id="score">0</strong>
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         HOME SCREEN
+    ========================== -->
+
+    <section id="home-screen" class="screen">
+
+        <div class="hero">
+
+            <span class="badge">
+                ABUMEENAT MATH QUIZ
+            </span>
+
+            <h2>
+                Test Your
+                <span>Math Skills</span>
+            </h2>
+
+            <p>
+                Answer 20 mathematical questions.
+                You have 15 seconds for each question
+                and only 3 failures are allowed.
+            </p>
+
+            <button
+                class="primary-btn"
+                onclick="showLevels()"
+            >
+                Start Quiz
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         LEVEL SCREEN
+    ========================== -->
+
+    <section id="level-screen" class="screen hidden">
+
+        <div class="section-heading">
+
+            <span class="badge">
+                STEP 1
+            </span>
+
+            <h2>Choose Your Level</h2>
+
+            <p>
+                Select the difficulty you want to attempt.
+            </p>
+
+        </div>
+
+
+        <div class="levels">
+
+            <button
+                class="level-card"
+                onclick="selectLevel('easy')"
+            >
+
+                <span class="level-number">01</span>
 
                 <div>
-                    <h1>Abumeenat</h1>
-                    <p>Math Challenge</p>
-                </div>
-            </div>
-
-            <div class="score-box">
-                <span>SCORE</span>
-                <strong id="score">0</strong>
-            </div>
-
-        </header>
-
-
-        <!-- DIFFICULTY SCREEN -->
-        <main id="difficulty-screen" class="screen">
-
-            <div class="welcome">
-
-                <span class="badge">ABUMEENAT MATH CHALLENGE</span>
-
-                <h2>Test Your<br><span>Mathematical Skills</span></h2>
-
-                <p>
-                    Solve each question before the 15-second timer
-                    runs out. You have only 3 chances to fail.
-                </p>
-
-            </div>
-
-
-            <h3 class="choose-title">Choose Your Level</h3>
-
-
-            <div class="levels">
-
-                <!-- EASY -->
-                <button
-                    class="level-card"
-                    onclick="startGame('easy')"
-                >
-
-                    <div class="level-icon">01</div>
-
-                    <div>
-                        <h3>Easy</h3>
-
-                        <p>Numbers from 1 – 20</p>
-
-                        <small>
-                            Basic arithmetic
-                        </small>
-                    </div>
-
-                    <span class="arrow">→</span>
-
-                </button>
-
-
-                <!-- INTERMEDIATE -->
-                <button
-                    class="level-card"
-                    onclick="startGame('intermediate')"
-                >
-
-                    <div class="level-icon">02</div>
-
-                    <div>
-                        <h3>Intermediate</h3>
-
-                        <p>Numbers from 20 – 30</p>
-
-                        <small>
-                            Moderate calculations
-                        </small>
-                    </div>
-
-                    <span class="arrow">→</span>
-
-                </button>
-
-
-                <!-- COMPLEX -->
-                <button
-                    class="level-card"
-                    onclick="startGame('complex')"
-                >
-
-                    <div class="level-icon">03</div>
-
-                    <div>
-                        <h3>Complex</h3>
-
-                        <p>Numbers from 30 – 50</p>
-
-                        <small>
-                            Advanced calculations
-                        </small>
-                    </div>
-
-                    <span class="arrow">→</span>
-
-                </button>
-
-            </div>
-
-        </main>
-
-
-        <!-- GAME SCREEN -->
-        <main id="game-screen" class="screen hidden">
-
-            <div class="game-top">
-
-                <div>
-                    <span class="label">LEVEL</span>
-                    <strong id="current-level">EASY</strong>
+                    <h3>Easy</h3>
+                    <p>Numbers from 1 – 20</p>
+                    <small>Basic calculations</small>
                 </div>
 
-                <div class="timer-area">
+                <span class="arrow">→</span>
 
-                    <span class="label">TIME LEFT</span>
-
-                    <div id="timer" class="timer">
-                        15
-                    </div>
-
-                </div>
-
-                <div>
-                    <span class="label">FAILURES</span>
-
-                    <strong>
-                        <span id="failures">0</span> / 3
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <!-- TIMER BAR -->
-            <div class="progress-container">
-                <div id="progress-bar"></div>
-            </div>
-
-
-            <!-- QUESTION -->
-            <div class="question-card">
-
-                <span class="question-label">
-                    SOLVE THIS
-                </span>
-
-                <div id="question" class="question">
-                    10 + 5
-                </div>
-
-            </div>
-
-
-            <!-- ANSWER -->
-            <div class="answer-area">
-
-                <input
-                    type="number"
-                    id="answer"
-                    placeholder="Enter your answer"
-                    autocomplete="off"
-                >
-
-                <button
-                    id="submit-btn"
-                    onclick="checkAnswer()"
-                >
-                    Submit Answer
-                </button>
-
-            </div>
-
-
-            <p id="message" class="message"></p>
+            </button>
 
 
             <button
-                class="quit-btn"
-                onclick="returnToMenu()"
+                class="level-card"
+                onclick="selectLevel('intermediate')"
             >
-                ← Quit Challenge
+
+                <span class="level-number">02</span>
+
+                <div>
+                    <h3>Intermediate</h3>
+                    <p>Numbers from 20 – 30</p>
+                    <small>Moderate calculations</small>
+                </div>
+
+                <span class="arrow">→</span>
+
             </button>
 
-        </main>
 
+            <button
+                class="level-card"
+                onclick="selectLevel('complex')"
+            >
 
-        <!-- GAME OVER SCREEN -->
-        <main id="game-over-screen" class="screen hidden">
+                <span class="level-number">03</span>
 
-            <div class="game-over">
-
-                <div class="game-over-icon">
-                    !
+                <div>
+                    <h3>Complex</h3>
+                    <p>Numbers from 30 – 50</p>
+                    <small>Advanced calculations</small>
                 </div>
 
-                <span class="badge">
-                    ABUMEENAT MATH CHALLENGE
-                </span>
+                <span class="arrow">→</span>
 
-                <h2>Challenge Over</h2>
+            </button>
 
-                <p>
-                    You reached the maximum of 3 failures.
-                </p>
+        </div>
+
+    </section>
 
 
-                <div class="result-box">
+    <!-- =========================
+         INSTRUCTION SCREEN
+    ========================== -->
 
-                    <span>YOUR FINAL SCORE</span>
+    <section id="instruction-screen" class="screen hidden">
 
-                    <strong id="final-score">
-                        0
-                    </strong>
+        <div class="instructions">
 
+            <span class="badge">
+                ABUMEENAT QUIZ
+            </span>
+
+            <h2>Quiz Instructions</h2>
+
+            <div class="instruction-list">
+
+                <div>
+                    <strong>20</strong>
+                    <span>Questions</span>
                 </div>
 
-
-                <div class="result-details">
-
-                    <div>
-                        <span>LEVEL</span>
-                        <strong id="final-level">
-                            EASY
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>FAILURES</span>
-                        <strong>3 / 3</strong>
-                    </div>
-
+                <div>
+                    <strong>15s</strong>
+                    <span>Per Question</span>
                 </div>
 
-
-                <button
-                    class="restart-btn"
-                    onclick="returnToMenu()"
-                >
-                    Play Again
-                </button>
+                <div>
+                    <strong>3</strong>
+                    <span>Failures Allowed</span>
+                </div>
 
             </div>
 
-        </main>
+
+            <ul>
+
+                <li>
+                    Choose the correct answer for every question.
+                </li>
+
+                <li>
+                    You have 15 seconds to answer each question.
+                </li>
+
+                <li>
+                    A wrong answer counts as one failure.
+                </li>
+
+                <li>
+                    Running out of time counts as one failure.
+                </li>
+
+                <li>
+                    The quiz ends after 3 failures.
+                </li>
+
+                <li>
+                    A sound will play during the final 6 seconds.
+                </li>
+
+            </ul>
 
 
-        <!-- FOOTER -->
-        <footer>
+            <button
+                class="primary-btn"
+                onclick="startQuiz()"
+            >
+                Begin Quiz
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         QUIZ SCREEN
+    ========================== -->
+
+    <section id="quiz-screen" class="screen hidden">
+
+        <div class="quiz-top">
+
+            <div>
+                <span>QUESTION</span>
+
+                <strong>
+                    <span id="question-number">1</span>
+                    / 20
+                </strong>
+            </div>
+
+
+            <div class="timer-area">
+
+                <span>TIME</span>
+
+                <div id="timer">
+                    15
+                </div>
+
+            </div>
+
+
+            <div>
+                <span>FAILURES</span>
+
+                <strong>
+                    <span id="failures">0</span> / 3
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+
+        <div class="question-card">
+
+            <span class="question-label">
+                SOLVE THE QUESTION
+            </span>
+
+            <h2 id="question">
+                10 + 5 = ?
+            </h2>
+
+        </div>
+
+
+        <!-- ANSWER OPTIONS -->
+
+        <div
+            id="options"
+            class="options"
+        ></div>
+
+
+        <p
+            id="quiz-message"
+            class="quiz-message"
+        ></p>
+
+
+        <button
+            class="quit-btn"
+            onclick="quitQuiz()"
+        >
+            Quit Quiz
+        </button>
+
+    </section>
+
+
+    <!-- =========================
+         RESULT SCREEN
+    ========================== -->
+
+    <section id="result-screen" class="screen hidden">
+
+        <div class="result">
+
+            <span class="badge">
+                QUIZ COMPLETED
+            </span>
+
+            <h2>Well Done!</h2>
+
             <p>
-                © 2026 <strong>Abumeenat</strong> · Math Challenge
+                Here is your Abumeenat Math Quiz result.
             </p>
-        </footer>
-
-    </div>
 
 
-    <script src="script.js"></script>
+            <div class="final-score">
+
+                <span>FINAL SCORE</span>
+
+                <strong id="final-score">
+                    0
+                </strong>
+
+                <small>
+                    / 20
+                </small>
+
+            </div>
+
+
+            <div class="result-grid">
+
+                <div>
+                    <span>Correct</span>
+                    <strong id="correct-result">0</strong>
+                </div>
+
+                <div>
+                    <span>Wrong</span>
+                    <strong id="wrong-result">0</strong>
+                </div>
+
+                <div>
+                    <span>Time Outs</span>
+                    <strong id="timeout-result">0</strong>
+                </div>
+
+                <div>
+                    <span>Accuracy</span>
+                    <strong id="accuracy-result">0%</strong>
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="returnHome()"
+            >
+                Take Quiz Again
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+        © 2026 <strong>Abumeenat</strong> · Math Quiz
+    </footer>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
