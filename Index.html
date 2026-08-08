@@ -1,46 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Professional Computer Based Test and Examination Platform">
+    <meta name="description"
+          content="Professional Computer Based Testing Platform">
 
     <title>CBT Portal | Computer Based Testing</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
     <!-- =========================
-         HEADER / NAVIGATION
+         HEADER
     ========================== -->
+
     <header class="site-header">
 
         <div class="container navbar">
 
-            <a href="/" class="logo">
+            <!-- Logo -->
+
+            <a href="index.html" class="logo">
+
                 <span class="logo-icon">C</span>
+
                 <span>CBT Portal</span>
+
             </a>
 
+
+            <!-- Navigation -->
+
             <nav class="navigation">
-                <a href="index.html">Home</a>
+
+                <a href="#home">Home</a>
+
                 <a href="#features">Features</a>
+
                 <a href="#how-it-works">How It Works</a>
+
                 <a href="#about">About</a>
+
                 <a href="#contact">Contact</a>
+
             </nav>
 
+
+            <!-- Navigation Buttons -->
+
             <div class="nav-actions">
-                <a href="{{ url_for('auth.login') }}" class="btn btn-outline">
+
+                <a href="login.html"
+                   class="btn btn-outline">
                     Login
                 </a>
 
-                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+                <a href="login.html"
+                   class="btn btn-primary">
                     Start Test
                 </a>
+
             </div>
 
         </div>
@@ -49,13 +73,22 @@
 
 
     <!-- =========================
-         HERO SECTION
+         MAIN CONTENT
     ========================== -->
+
     <main>
+
+
+        <!-- =========================
+             HERO SECTION
+        ========================== -->
 
         <section class="hero" id="home">
 
             <div class="container hero-content">
+
+
+                <!-- Hero Text -->
 
                 <div class="hero-text">
 
@@ -63,46 +96,81 @@
                         Professional Computer Based Testing
                     </span>
 
+
                     <h1>
+
                         A Smarter Way to
-                        <span>Test, Learn & Evaluate</span>
+
+                        <span>
+                            Test, Learn & Evaluate
+                        </span>
+
                     </h1>
 
+
                     <p>
+
                         Welcome to our professional Computer Based Testing
                         platform. Take secure online examinations, answer
                         questions with ease, and receive your results instantly.
+
                     </p>
+
 
                     <div class="hero-actions">
 
-                        <a href="{{ url_for('auth.login') }}"
+                        <a href="login.html"
                            class="btn btn-primary btn-large">
+
                             Start Examination
+
                         </a>
+
 
                         <a href="#how-it-works"
                            class="btn btn-outline btn-large">
+
                             How It Works
+
                         </a>
 
                     </div>
 
+
+                    <!-- Statistics -->
+
                     <div class="hero-stats">
 
                         <div class="stat">
+
                             <strong>100%</strong>
-                            <span>Online Testing</span>
+
+                            <span>
+                                Online Testing
+                            </span>
+
                         </div>
 
+
                         <div class="stat">
+
                             <strong>24/7</strong>
-                            <span>Accessible</span>
+
+                            <span>
+                                Accessible
+                            </span>
+
                         </div>
 
+
                         <div class="stat">
+
                             <strong>Instant</strong>
-                            <span>Results</span>
+
+                            <span>
+                                Results
+                            </span>
+
                         </div>
 
                     </div>
@@ -110,78 +178,156 @@
                 </div>
 
 
-                <!-- Examination Preview -->
+                <!-- =========================
+                     EXAMINATION PREVIEW
+                ========================== -->
+
                 <div class="hero-preview">
 
                     <div class="exam-card">
 
+
+                        <!-- Exam Header -->
+
                         <div class="exam-card-header">
 
                             <div>
-                                <span>EXAMINATION</span>
-                                <h3>Frontend Web Development</h3>
+
+                                <span>
+                                    EXAMINATION
+                                </span>
+
+                                <h3>
+                                    Frontend Web Development
+                                </h3>
+
                             </div>
 
+
                             <div class="timer">
+
                                 59:42
+
                             </div>
 
                         </div>
+
+
+                        <!-- Progress -->
 
                         <div class="progress-area">
 
                             <div class="progress-info">
-                                <span>Question 12 of 50</span>
-                                <span>24%</span>
+
+                                <span>
+                                    Question 12 of 50
+                                </span>
+
+                                <span>
+                                    24%
+                                </span>
+
                             </div>
 
+
                             <div class="progress-bar">
+
                                 <div class="progress"></div>
+
                             </div>
 
                         </div>
+
+
+                        <!-- Question -->
 
                         <div class="question-preview">
 
                             <h4>
-                                Which language is used to structure
-                                web pages?
+
+                                Which language is used to
+                                structure web pages?
+
                             </h4>
 
+
                             <label class="option">
-                                <input type="radio" name="question">
+
+                                <input
+                                    type="radio"
+                                    name="question"
+                                >
+
                                 <span>A</span>
+
                                 HTML
+
                             </label>
 
+
                             <label class="option">
-                                <input type="radio" name="question">
+
+                                <input
+                                    type="radio"
+                                    name="question"
+                                >
+
                                 <span>B</span>
+
                                 Python
+
                             </label>
 
+
                             <label class="option">
-                                <input type="radio" name="question">
+
+                                <input
+                                    type="radio"
+                                    name="question"
+                                >
+
                                 <span>C</span>
+
                                 SQL
+
                             </label>
 
+
                             <label class="option">
-                                <input type="radio" name="question">
+
+                                <input
+                                    type="radio"
+                                    name="question"
+                                >
+
                                 <span>D</span>
+
                                 PHP
+
                             </label>
 
                         </div>
 
+
+                        <!-- Exam Footer -->
+
                         <div class="exam-card-footer">
 
-                            <button type="button" class="btn btn-outline">
+                            <button
+                                type="button"
+                                class="btn btn-outline">
+
                                 Previous
+
                             </button>
 
-                            <button type="button" class="btn btn-primary">
+
+                            <button
+                                type="button"
+                                class="btn btn-primary">
+
                                 Next Question
+
                             </button>
 
                         </div>
@@ -196,24 +342,37 @@
 
 
         <!-- =========================
-             FEATURES SECTION
+             FEATURES
         ========================== -->
+
         <section class="features" id="features">
 
             <div class="container">
 
+
                 <div class="section-heading">
 
-                    <span>PLATFORM FEATURES</span>
+                    <span>
+                        PLATFORM FEATURES
+                    </span>
+
 
                     <h2>
+
                         Everything You Need for
-                        <span>Professional Testing</span>
+
+                        <span>
+                            Professional Testing
+                        </span>
+
                     </h2>
 
+
                     <p>
+
                         Our CBT platform provides a complete examination
                         experience for administrators and candidates.
+
                     </p>
 
                 </div>
@@ -221,17 +380,22 @@
 
                 <div class="feature-grid">
 
+
                     <article class="feature-card">
 
                         <div class="feature-icon">
                             🔐
                         </div>
 
-                        <h3>Secure Examination</h3>
+                        <h3>
+                            Secure Examination
+                        </h3>
 
                         <p>
+
                             Secure candidate authentication and controlled
                             examination access.
+
                         </p>
 
                     </article>
@@ -243,11 +407,15 @@
                             ⏱️
                         </div>
 
-                        <h3>Smart Timer</h3>
+                        <h3>
+                            Smart Timer
+                        </h3>
 
                         <p>
+
                             Automatic countdown timer keeps examinations
                             within the allocated time.
+
                         </p>
 
                     </article>
@@ -259,11 +427,15 @@
                             📝
                         </div>
 
-                        <h3>Question Management</h3>
+                        <h3>
+                            Question Management
+                        </h3>
 
                         <p>
+
                             Administrators can create, edit and manage
                             examination questions easily.
+
                         </p>
 
                     </article>
@@ -275,11 +447,15 @@
                             📊
                         </div>
 
-                        <h3>Instant Results</h3>
+                        <h3>
+                            Instant Results
+                        </h3>
 
                         <p>
+
                             Candidates receive their examination scores
                             immediately after submission.
+
                         </p>
 
                     </article>
@@ -291,11 +467,15 @@
                             📥
                         </div>
 
-                        <h3>Bulk Question Upload</h3>
+                        <h3>
+                            Bulk Question Upload
+                        </h3>
 
                         <p>
+
                             Upload multiple questions using supported
                             spreadsheet or CSV files.
+
                         </p>
 
                     </article>
@@ -307,11 +487,15 @@
                             📱
                         </div>
 
-                        <h3>Responsive Design</h3>
+                        <h3>
+                            Responsive Design
+                        </h3>
 
                         <p>
+
                             Access the CBT platform comfortably on computers,
                             tablets and mobile devices.
+
                         </p>
 
                     </article>
@@ -326,17 +510,28 @@
         <!-- =========================
              HOW IT WORKS
         ========================== -->
-        <section class="how-it-works" id="how-it-works">
+
+        <section class="how-it-works"
+                 id="how-it-works">
 
             <div class="container">
 
+
                 <div class="section-heading">
 
-                    <span>HOW IT WORKS</span>
+                    <span>
+                        HOW IT WORKS
+                    </span>
+
 
                     <h2>
+
                         Take Your Examination
-                        <span>in Four Simple Steps</span>
+
+                        <span>
+                            in Four Simple Steps
+                        </span>
+
                     </h2>
 
                 </div>
@@ -344,14 +539,22 @@
 
                 <div class="steps">
 
+
                     <div class="step">
 
-                        <div class="step-number">01</div>
+                        <div class="step-number">
+                            01
+                        </div>
 
-                        <h3>Login</h3>
+                        <h3>
+                            Login
+                        </h3>
 
                         <p>
-                            Sign in using your candidate ID and password.
+
+                            Sign in using your candidate ID
+                            and password.
+
                         </p>
 
                     </div>
@@ -359,13 +562,19 @@
 
                     <div class="step">
 
-                        <div class="step-number">02</div>
+                        <div class="step-number">
+                            02
+                        </div>
 
-                        <h3>Read Instructions</h3>
+                        <h3>
+                            Read Instructions
+                        </h3>
 
                         <p>
-                            Review the examination instructions before
-                            starting your test.
+
+                            Review the examination instructions
+                            before starting your test.
+
                         </p>
 
                     </div>
@@ -373,13 +582,19 @@
 
                     <div class="step">
 
-                        <div class="step-number">03</div>
+                        <div class="step-number">
+                            03
+                        </div>
 
-                        <h3>Take the Test</h3>
+                        <h3>
+                            Take the Test
+                        </h3>
 
                         <p>
-                            Answer the questions while monitoring your
-                            remaining time.
+
+                            Answer the questions while monitoring
+                            your remaining time.
+
                         </p>
 
                     </div>
@@ -387,12 +602,19 @@
 
                     <div class="step">
 
-                        <div class="step-number">04</div>
+                        <div class="step-number">
+                            04
+                        </div>
 
-                        <h3>Get Your Result</h3>
+                        <h3>
+                            Get Your Result
+                        </h3>
 
                         <p>
-                            Submit your examination and receive your result.
+
+                            Submit your examination and receive
+                            your result.
+
                         </p>
 
                     </div>
@@ -405,8 +627,9 @@
 
 
         <!-- =========================
-             ABOUT SECTION
+             ABOUT
         ========================== -->
+
         <section class="about" id="about">
 
             <div class="container about-content">
@@ -417,27 +640,42 @@
                         ABOUT THE PLATFORM
                     </span>
 
+
                     <h2>
+
                         Built for Modern
-                        <span>Digital Assessment</span>
+
+                        <span>
+                            Digital Assessment
+                        </span>
+
                     </h2>
 
-                    <p>
-                        Our Computer Based Testing platform is designed to
-                        simplify the administration and delivery of online
-                        examinations.
-                    </p>
 
                     <p>
+
+                        Our Computer Based Testing platform is designed
+                        to simplify the administration and delivery of
+                        online examinations.
+
+                    </p>
+
+
+                    <p>
+
                         From candidate registration and question management
                         to examination delivery and automated scoring, the
                         platform provides the essential tools required for
                         efficient digital assessment.
+
                     </p>
 
-                    <a href="{{ url_for('auth.login') }}"
+
+                    <a href="login.html"
                        class="btn btn-primary">
+
                         Access CBT Portal
+
                     </a>
 
                 </div>
@@ -450,6 +688,7 @@
         <!-- =========================
              CALL TO ACTION
         ========================== -->
+
         <section class="cta">
 
             <div class="container cta-content">
@@ -458,13 +697,20 @@
                     Ready to Take Your Examination?
                 </h2>
 
+
                 <p>
-                    Login to your account and begin your examination.
+
+                    Login to your account and begin
+                    your examination.
+
                 </p>
 
-                <a href="{{ url_for('auth.login') }}"
+
+                <a href="login.html"
                    class="btn btn-light btn-large">
+
                     Login to Continue
+
                 </a>
 
             </div>
@@ -477,68 +723,117 @@
     <!-- =========================
          FOOTER
     ========================== -->
-    <footer class="site-footer" id="contact">
+
+    <footer class="site-footer"
+            id="contact">
 
         <div class="container footer-content">
 
+
+            <!-- Footer Brand -->
+
             <div class="footer-brand">
 
-                <a href="/" class="logo">
-                    <span class="logo-icon">C</span>
-                    <span>CBT Portal</span>
+                <a href="index.html"
+                   class="logo">
+
+                    <span class="logo-icon">
+                        C
+                    </span>
+
+                    <span>
+                        CBT Portal
+                    </span>
+
                 </a>
 
+
                 <p>
-                    A professional platform for secure and efficient
-                    computer-based testing.
+
+                    A professional platform for secure
+                    and efficient computer-based testing.
+
                 </p>
 
             </div>
 
 
+            <!-- Quick Links -->
+
             <div class="footer-links">
 
-                <h3>Quick Links</h3>
+                <h3>
+                    Quick Links
+                </h3>
 
-                <a href="#home">Home</a>
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#about">About</a>
+                <a href="#home">
+                    Home
+                </a>
+
+                <a href="#features">
+                    Features
+                </a>
+
+                <a href="#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="#about">
+                    About
+                </a>
 
             </div>
 
 
+            <!-- Account -->
+
             <div class="footer-links">
 
-                <h3>Account</h3>
+                <h3>
+                    Account
+                </h3>
 
-                <a href="{{ url_for('auth.login') }}">
+                <a href="login.html">
                     Candidate Login
                 </a>
 
-                <a href="{{ url_for('auth.login') }}">
+                <a href="login.html">
                     Administrator Login
                 </a>
 
             </div>
 
 
+            <!-- Contact -->
+
             <div class="footer-links">
 
-                <h3>Contact</h3>
+                <h3>
+                    Contact
+                </h3>
 
-                <p>Email: support@cbtportal.com</p>
-                <p>Available Online</p>
+                <p>
+                    Email: support@cbtportal.com
+                </p>
+
+                <p>
+                    Available Online
+                </p>
 
             </div>
 
         </div>
 
 
+        <!-- Copyright -->
+
         <div class="footer-bottom">
 
             <p>
-                &copy; 2026 CBT Portal. All Rights Reserved.
+
+                &copy; 2026 CBT Portal.
+                All Rights Reserved.
+
             </p>
 
         </div>
@@ -546,5 +841,10 @@
     </footer>
 
 
+    <!-- JavaScript -->
+
+    <script src="js/main.js"></script>
+
 </body>
+
 </html>
