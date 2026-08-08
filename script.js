@@ -1,855 +1,1051 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ==========================================
+   ABUMEENAT MATH QUIZ
+========================================== */
+
+
+/* ==========================================
+   GAME VARIABLES
+========================================== */
+
+let currentLevel = "";
+
+let currentQuestion = 0;
+
+let totalQuestions = 20;
+
+let score = 0;
+
+let correctAnswers = 0;
+
+let wrongAnswers = 0;
+
+let timeouts = 0;
+
+let failures = 0;
+
+let timeLeft = 15;
+
+let timerInterval;
+
+let correctAnswer;
+
+let questionLocked = false;
+
+
+/* ==========================================
+   DIFFICULTY
+========================================== */
+
+const levels = {
+
+    easy: {
+        min: 1,
+        max: 20
+    },
+
+    intermediate: {
+        min: 20,
+        max: 30
+    },
+
+    complex: {
+        min: 30,
+        max: 50
+    }
+
+};
+
+
+/* ==========================================
+   AUDIO
+========================================== */
+
+const audioContext =
+    new (
+        window.AudioContext ||
+        window.webkitAudioContext
+    )();
+
+
+function beep() {
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        audioContext.destination
+    );
+
+
+    oscillator.frequency.value = 800;
+
+
+    gain.gain.setValueAtTime(
+        0.2,
+        audioContext.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + 0.15
+    );
+
+
+    oscillator.start();
+
+    oscillator.stop(
+        audioContext.currentTime + 0.15
+    );
+
 }
 
 
-body {
-    min-height: 100vh;
+/* ==========================================
+   SCREEN CONTROL
+========================================== */
 
-    font-family: Arial, Helvetica, sans-serif;
+function hideAllScreens() {
 
-    background:
-        radial-gradient(
-            circle at top right,
-            #172554,
-            #070b13 50%
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.add("hidden");
+
+        });
+
+}
+
+
+function showLevels() {
+
+    hideAllScreens();
+
+    document
+        .getElementById("level-screen")
+        .classList.remove("hidden");
+
+}
+
+
+/* ==========================================
+   SELECT LEVEL
+========================================== */
+
+function selectLevel(level) {
+
+    currentLevel = level;
+
+    hideAllScreens();
+
+    document
+        .getElementById("instruction-screen")
+        .classList.remove("hidden");
+
+}
+
+
+/* ==========================================
+   START QUIZ
+========================================== */
+
+function startQuiz() {
+
+    currentQuestion = 0;
+
+    score = 0;
+
+    correctAnswers = 0;
+
+    wrongAnswers = 0;
+
+    timeouts = 0;
+
+    failures = 0;
+
+
+    document
+        .getElementById("score")
+        .textContent = "0";
+
+
+    document
+        .getElementById("failures")
+        .textContent = "0";
+
+
+    hideAllScreens();
+
+
+    document
+        .getElementById("quiz-screen")
+        .classList.remove("hidden");
+
+
+    nextQuestion();
+
+}
+
+
+/* ==========================================
+   RANDOM NUMBER
+========================================== */
+
+function randomNumber(min, max) {
+
+    return Math.floor(
+        Math.random() *
+        (max - min + 1)
+    ) + min;
+
+}
+
+
+/* ==========================================
+   CREATE QUESTION
+========================================== */
+
+function createQuestion() {
+
+    const range =
+        levels[currentLevel];
+
+
+    let num1 =
+        randomNumber(
+            range.min,
+            range.max
         );
 
-    color: white;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
-}
-
-
-.app {
-    width: 100%;
-    max-width: 900px;
-
-    background: #0f172a;
-
-    border: 1px solid #263449;
-
-    border-radius: 24px;
-
-    padding: 30px;
-
-    box-shadow:
-        0 30px 80px rgba(0,0,0,.5);
-}
-
-
-/* HEADER */
-
-.header {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 40px;
-}
-
-
-.brand {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-}
-
-
-.logo {
-    width: 48px;
-    height: 48px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: white;
-
-    color: #0f172a;
-
-    border-radius: 13px;
-
-    font-size: 23px;
-
-    font-weight: bold;
-}
-
-
-.brand h1 {
-    font-size: 22px;
-}
-
-
-.brand p {
-    color: #94a3b8;
-
-    font-size: 12px;
-
-    margin-top: 3px;
-}
-
-
-.score-box {
-    background: #172033;
-
-    border: 1px solid #29364a;
-
-    padding: 10px 22px;
-
-    border-radius: 12px;
-
-    text-align: center;
-}
-
-
-.score-box span {
-    display: block;
-
-    font-size: 9px;
-
-    color: #64748b;
-
-    letter-spacing: 1px;
-}
-
-
-.score-box strong {
-    display: block;
-
-    font-size: 25px;
-
-    margin-top: 3px;
-}
-
-
-/* GENERAL */
-
-.hidden {
-    display: none !important;
-}
-
-
-.screen {
-    width: 100%;
-}
-
-
-.badge {
-    display: inline-block;
-
-    padding: 7px 12px;
-
-    border: 1px solid #334155;
-
-    border-radius: 30px;
-
-    color: #cbd5e1;
-
-    font-size: 9px;
-
-    letter-spacing: 2px;
-
-    margin-bottom: 18px;
-}
-
-
-/* HERO */
-
-.hero {
-    text-align: center;
-
-    max-width: 650px;
-
-    margin: auto;
-}
-
-
-.hero h2 {
-    font-size: 48px;
-
-    line-height: 1.1;
-
-    margin-bottom: 20px;
-}
-
-
-.hero h2 span {
-    color: #94a3b8;
-}
-
-
-.hero p {
-    color: #94a3b8;
-
-    line-height: 1.7;
-
-    margin-bottom: 30px;
-}
-
-
-/* BUTTON */
-
-.primary-btn {
-    border: none;
-
-    background: white;
-
-    color: #0f172a;
-
-    padding: 15px 30px;
-
-    border-radius: 12px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
-
-
-.primary-btn:hover {
-    transform: translateY(-3px);
-}
-
-
-/* SECTION HEADING */
-
-.section-heading {
-    text-align: center;
-
-    margin-bottom: 30px;
-}
-
-
-.section-heading h2 {
-    font-size: 32px;
-
-    margin-bottom: 8px;
-}
-
-
-.section-heading p {
-    color: #94a3b8;
-}
-
-
-/* LEVELS */
-
-.levels {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 15px;
-}
-
-
-.level-card {
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-
-    text-align: left;
-
-    padding: 20px;
-
-    background: #131d2e;
-
-    color: white;
-
-    border: 1px solid #29364a;
-
-    border-radius: 15px;
-
-    cursor: pointer;
-
-    transition: .3s;
-}
-
-
-.level-card:hover {
-    transform: translateY(-5px);
-
-    border-color: white;
-}
-
-
-.level-number {
-    width: 43px;
-    height: 43px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: white;
-
-    color: #0f172a;
-
-    border-radius: 11px;
-
-    font-weight: bold;
-
-    font-size: 12px;
-}
-
-
-.level-card h3 {
-    margin-bottom: 5px;
-}
-
-
-.level-card p {
-    font-size: 12px;
-
-    color: #cbd5e1;
-}
-
-
-.level-card small {
-    display: block;
-
-    color: #64748b;
-
-    margin-top: 5px;
-
-    font-size: 10px;
-}
-
-
-.arrow {
-    margin-left: auto;
-
-    font-size: 20px;
-
-    color: #64748b;
-}
-
-
-/* INSTRUCTIONS */
-
-.instructions {
-    max-width: 600px;
-
-    margin: auto;
-
-    text-align: center;
-}
-
-
-.instructions h2 {
-    font-size: 32px;
-
-    margin-bottom: 25px;
-}
-
-
-.instruction-list {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 10px;
-
-    margin-bottom: 30px;
-}
-
-
-.instruction-list div {
-    background: #131d2e;
-
-    border: 1px solid #29364a;
-
-    padding: 18px;
-
-    border-radius: 12px;
-}
-
-
-.instruction-list strong {
-    display: block;
-
-    font-size: 25px;
-}
-
-
-.instruction-list span {
-    color: #64748b;
-
-    font-size: 10px;
-}
-
-
-.instructions ul {
-    text-align: left;
-
-    color: #94a3b8;
-
-    line-height: 2;
-
-    margin-bottom: 30px;
-}
-
-
-/* QUIZ TOP */
-
-.quiz-top {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr 1fr;
-
-    text-align: center;
-
-    padding: 18px;
-
-    background: #131d2e;
-
-    border: 1px solid #29364a;
-
-    border-radius: 15px;
-}
-
-
-.quiz-top > div {
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-}
-
-
-.quiz-top span {
-    color: #64748b;
-
-    font-size: 9px;
-
-    letter-spacing: 1.5px;
-
-    margin-bottom: 5px;
-}
-
-
-.quiz-top strong {
-    font-size: 17px;
-}
-
-
-/* TIMER */
-
-#timer {
-    font-size: 28px;
-
-    font-weight: bold;
-}
-
-
-#timer.warning {
-    color: #facc15;
-}
-
-
-#timer.danger {
-    color: #ef4444;
-
-    animation: pulse .6s infinite;
-}
-
-
-@keyframes pulse {
-
-    50% {
-        transform: scale(1.15);
-    }
-
-}
-
-
-/* PROGRESS */
-
-.progress-container {
-    height: 6px;
-
-    background: #202b3c;
-
-    border-radius: 20px;
-
-    overflow: hidden;
-
-    margin: 18px 0 30px;
-}
-
-
-#progress-bar {
-    height: 100%;
-
-    width: 100%;
-
-    background: white;
-
-    transition: width 1s linear;
-}
-
-
-/* QUESTION */
-
-.question-card {
-    background:
-        linear-gradient(
-            145deg,
-            #172236,
-            #0e1625
+    let num2 =
+        randomNumber(
+            range.min,
+            range.max
         );
 
-    border: 1px solid #29364a;
 
-    border-radius: 20px;
+    const operators = [
+        "+",
+        "-",
+        "×",
+        "÷"
+    ];
 
-    padding: 45px 20px;
 
-    text-align: center;
+    const operator =
+        operators[
+            randomNumber(
+                0,
+                operators.length - 1
+            )
+        ];
 
-    margin-bottom: 25px;
-}
 
+    /* ADDITION */
 
-.question-label {
-    display: block;
+    if (operator === "+") {
 
-    color: #64748b;
+        correctAnswer =
+            num1 + num2;
 
-    font-size: 10px;
-
-    letter-spacing: 2px;
-
-    margin-bottom: 15px;
-}
-
-
-.question-card h2 {
-    font-size: 45px;
-}
-
-
-/* OPTIONS */
-
-.options {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 15px;
-}
-
-
-.option {
-    padding: 18px;
-
-    background: #131d2e;
-
-    color: white;
-
-    border: 1px solid #29364a;
-
-    border-radius: 12px;
-
-    cursor: pointer;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    transition: .2s;
-}
-
-
-.option:hover {
-    border-color: white;
-
-    transform: translateY(-2px);
-}
-
-
-.option.correct {
-    background: #123522;
-
-    border-color: #4ade80;
-
-    color: #4ade80;
-}
-
-
-.option.wrong {
-    background: #351719;
-
-    border-color: #f87171;
-
-    color: #f87171;
-}
-
-
-.option.disabled {
-    pointer-events: none;
-}
-
-
-/* MESSAGE */
-
-.quiz-message {
-    text-align: center;
-
-    min-height: 22px;
-
-    margin-top: 18px;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-/* QUIT */
-
-.quit-btn {
-    display: block;
-
-    margin: 25px auto 0;
-
-    border: none;
-
-    background: transparent;
-
-    color: #64748b;
-
-    cursor: pointer;
-}
-
-
-.quit-btn:hover {
-    color: white;
-}
-
-
-/* RESULT */
-
-.result {
-    text-align: center;
-
-    max-width: 600px;
-
-    margin: auto;
-}
-
-
-.result h2 {
-    font-size: 38px;
-
-    margin-bottom: 8px;
-}
-
-
-.result > p {
-    color: #94a3b8;
-
-    margin-bottom: 25px;
-}
-
-
-.final-score {
-    background: #131d2e;
-
-    border: 1px solid #29364a;
-
-    padding: 25px;
-
-    border-radius: 18px;
-
-    margin-bottom: 20px;
-}
-
-
-.final-score span {
-    display: block;
-
-    color: #64748b;
-
-    font-size: 10px;
-
-    letter-spacing: 2px;
-}
-
-
-.final-score strong {
-    font-size: 55px;
-}
-
-
-.final-score small {
-    color: #64748b;
-
-    font-size: 18px;
-}
-
-
-.result-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 10px;
-
-    margin-bottom: 30px;
-}
-
-
-.result-grid div {
-    background: #131d2e;
-
-    border: 1px solid #29364a;
-
-    padding: 15px;
-
-    border-radius: 12px;
-}
-
-
-.result-grid span {
-    display: block;
-
-    color: #64748b;
-
-    font-size: 9px;
-
-    margin-bottom: 6px;
-}
-
-
-.result-grid strong {
-    font-size: 18px;
-}
-
-
-/* FOOTER */
-
-footer {
-    border-top: 1px solid #1e293b;
-
-    margin-top: 35px;
-
-    padding-top: 20px;
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 10px;
-}
-
-
-footer strong {
-    color: #cbd5e1;
-}
-
-
-/* MOBILE */
-
-@media (max-width: 700px) {
-
-    body {
-        padding: 10px;
     }
 
 
-    .app {
-        padding: 20px;
+    /* SUBTRACTION */
 
-        border-radius: 18px;
+    else if (operator === "-") {
+
+        if (num2 > num1) {
+
+            const temp = num1;
+
+            num1 = num2;
+
+            num2 = temp;
+
+        }
+
+
+        correctAnswer =
+            num1 - num2;
+
     }
 
 
-    .hero h2 {
-        font-size: 37px;
+    /* MULTIPLICATION */
+
+    else if (operator === "×") {
+
+        correctAnswer =
+            num1 * num2;
+
     }
 
 
-    .levels {
-        grid-template-columns: 1fr;
+    /* DIVISION */
+
+    else {
+
+        /*
+            Generate a clean
+            whole-number division.
+        */
+
+        num2 =
+            randomNumber(2, 10);
+
+
+        let answer =
+            randomNumber(
+                2,
+                10
+            );
+
+
+        num1 =
+            num2 * answer;
+
+
+        /*
+            Keep numbers reasonable.
+        */
+
+        if (
+            num1 < range.min ||
+            num1 > range.max
+        ) {
+
+            const possibleAnswers = [];
+
+
+            for (
+                let divisor = 2;
+                divisor <= 10;
+                divisor++
+            ) {
+
+                for (
+                    let result = 1;
+                    result <= 10;
+                    result++
+                ) {
+
+                    const value =
+                        divisor * result;
+
+
+                    if (
+                        value >= range.min &&
+                        value <= range.max
+                    ) {
+
+                        possibleAnswers.push({
+                            number: value,
+                            divisor: divisor,
+                            answer: result
+                        });
+
+                    }
+
+                }
+
+            }
+
+
+            if (
+                possibleAnswers.length > 0
+            ) {
+
+                const item =
+                    possibleAnswers[
+                        randomNumber(
+                            0,
+                            possibleAnswers.length - 1
+                        )
+                    ];
+
+
+                num1 = item.number;
+
+                num2 = item.divisor;
+
+                correctAnswer =
+                    item.answer;
+
+            }
+
+            else {
+
+                correctAnswer =
+                    Math.floor(
+                        num1 / num2
+                    );
+
+            }
+
+        }
+
+        else {
+
+            correctAnswer =
+                num1 / num2;
+
+        }
+
     }
 
 
-    .instruction-list {
-        grid-template-columns: 1fr 1fr 1fr;
+    return `${num1} ${operator} ${num2} = ?`;
+
+}
+
+
+/* ==========================================
+   GENERATE ANSWER OPTIONS
+========================================== */
+
+function generateOptions() {
+
+    const options = [];
+
+    options.push(correctAnswer);
+
+
+    while (options.length < 4) {
+
+        let difference =
+            randomNumber(
+                1,
+                10
+            );
+
+
+        let wrongAnswer;
+
+
+        if (
+            Math.random() > 0.5
+        ) {
+
+            wrongAnswer =
+                correctAnswer +
+                difference;
+
+        }
+
+        else {
+
+            wrongAnswer =
+                correctAnswer -
+                difference;
+
+        }
+
+
+        /*
+            Avoid duplicate answers.
+        */
+
+        if (
+            !options.includes(
+                wrongAnswer
+            )
+        ) {
+
+            options.push(
+                wrongAnswer
+            );
+
+        }
+
     }
 
 
-    .options {
-        grid-template-columns: 1fr;
+    /*
+        Shuffle options.
+    */
+
+    for (
+        let i = options.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            options[i],
+            options[j]
+        ] =
+        [
+            options[j],
+            options[i]
+        ];
+
     }
 
 
-    .question-card h2 {
-        font-size: 36px;
+    return options;
+
+}
+
+
+/* ==========================================
+   NEXT QUESTION
+========================================== */
+
+function nextQuestion() {
+
+    clearInterval(timerInterval);
+
+
+    /*
+        Check whether quiz is complete.
+    */
+
+    if (
+        currentQuestion >= totalQuestions ||
+        failures >= 3
+    ) {
+
+        finishQuiz();
+
+        return;
+
     }
 
 
-    .result-grid {
-        grid-template-columns: 1fr 1fr;
+    questionLocked = false;
+
+
+    currentQuestion++;
+
+
+    document
+        .getElementById("question-number")
+        .textContent =
+        currentQuestion;
+
+
+    const question =
+        createQuestion();
+
+
+    document
+        .getElementById("question")
+        .textContent =
+        question;
+
+
+    const options =
+        generateOptions();
+
+
+    const optionsContainer =
+        document.getElementById(
+            "options"
+        );
+
+
+    optionsContainer.innerHTML = "";
+
+
+    options.forEach(option => {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.className =
+            "option";
+
+
+        button.textContent =
+            option;
+
+
+        button.onclick =
+            () => selectAnswer(
+                option,
+                button
+            );
+
+
+        optionsContainer.appendChild(
+            button
+        );
+
+    });
+
+
+    document
+        .getElementById("quiz-message")
+        .textContent = "";
+
+
+    startTimer();
+
+}
+
+
+/* ==========================================
+   SELECT ANSWER
+========================================== */
+
+function selectAnswer(
+    selectedAnswer,
+    selectedButton
+) {
+
+    if (questionLocked) {
+        return;
+    }
+
+
+    questionLocked = true;
+
+
+    clearInterval(timerInterval);
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".option"
+        );
+
+
+    optionButtons.forEach(button => {
+
+        button.classList.add(
+            "disabled"
+        );
+
+
+        if (
+            Number(
+                button.textContent
+            ) === correctAnswer
+        ) {
+
+            button.classList.add(
+                "correct"
+            );
+
+        }
+
+    });
+
+
+    if (
+        Number(selectedAnswer) ===
+        Number(correctAnswer)
+    ) {
+
+        correctAnswers++;
+
+        score++;
+
+
+        document
+            .getElementById("score")
+            .textContent =
+            score;
+
+
+        document
+            .getElementById("quiz-message")
+            .textContent =
+            "Correct! ✓";
+
+
+        document
+            .getElementById("quiz-message")
+            .style.color =
+            "#4ade80";
+
+    }
+
+    else {
+
+        wrongAnswers++;
+
+        failures++;
+
+
+        selectedButton.classList.add(
+            "wrong"
+        );
+
+
+        document
+            .getElementById("failures")
+            .textContent =
+            failures;
+
+
+        document
+            .getElementById("quiz-message")
+            .textContent =
+            `Wrong! Correct answer: ${correctAnswer}`;
+
+
+        document
+            .getElementById("quiz-message")
+            .style.color =
+            "#f87171";
+
+    }
+
+
+    setTimeout(() => {
+
+        if (failures >= 3) {
+
+            finishQuiz();
+
+        }
+
+        else {
+
+            nextQuestion();
+
+        }
+
+    }, 900);
+
+}
+
+
+/* ==========================================
+   TIMER
+========================================== */
+
+function startTimer() {
+
+    timeLeft = 15;
+
+
+    updateTimer();
+
+
+    timerInterval =
+        setInterval(() => {
+
+            timeLeft--;
+
+
+            updateTimer();
+
+
+            /*
+                Sound from 6 seconds.
+            */
+
+            if (
+                timeLeft <= 6 &&
+                timeLeft > 0
+            ) {
+
+                beep();
+
+            }
+
+
+            if (timeLeft <= 0) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+
+                timeOut();
+
+            }
+
+        }, 1000);
+
+}
+
+
+/* ==========================================
+   UPDATE TIMER
+========================================== */
+
+function updateTimer() {
+
+    const timer =
+        document.getElementById(
+            "timer"
+        );
+
+
+    timer.textContent =
+        timeLeft;
+
+
+    const percentage =
+        (timeLeft / 15) * 100;
+
+
+    document
+        .getElementById("progress-bar")
+        .style.width =
+        percentage + "%";
+
+
+    timer.classList.remove(
+        "warning",
+        "danger"
+    );
+
+
+    if (timeLeft <= 6) {
+
+        timer.classList.add(
+            "warning"
+        );
+
+    }
+
+
+    if (timeLeft <= 3) {
+
+        timer.classList.remove(
+            "warning"
+        );
+
+        timer.classList.add(
+            "danger"
+        );
+
     }
 
 }
 
 
-@media (max-width: 450px) {
+/* ==========================================
+   TIME OUT
+========================================== */
 
-    .header {
-        margin-bottom: 25px;
+function timeOut() {
+
+    if (questionLocked) {
+        return;
     }
 
 
-    .brand h1 {
-        font-size: 18px;
+    questionLocked = true;
+
+
+    timeouts++;
+
+    failures++;
+
+
+    document
+        .getElementById("failures")
+        .textContent =
+        failures;
+
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".option"
+        );
+
+
+    optionButtons.forEach(button => {
+
+        button.classList.add(
+            "disabled"
+        );
+
+
+        if (
+            Number(
+                button.textContent
+            ) === correctAnswer
+        ) {
+
+            button.classList.add(
+                "correct"
+            );
+
+        }
+
+    });
+
+
+    document
+        .getElementById("quiz-message")
+        .textContent =
+        `Time's up! Correct answer: ${correctAnswer}`;
+
+
+    document
+        .getElementById("quiz-message")
+        .style.color =
+        "#f87171";
+
+
+    setTimeout(() => {
+
+        if (failures >= 3) {
+
+            finishQuiz();
+
+        }
+
+        else {
+
+            nextQuestion();
+
+        }
+
+    }, 1000);
+
+}
+
+
+/* ==========================================
+   FINISH QUIZ
+========================================== */
+
+function finishQuiz() {
+
+    clearInterval(timerInterval);
+
+
+    const questionsAttempted =
+        currentQuestion;
+
+
+    const accuracy =
+        questionsAttempted > 0
+            ? Math.round(
+                (
+                    correctAnswers /
+                    questionsAttempted
+                ) * 100
+            )
+            : 0;
+
+
+    document
+        .getElementById("final-score")
+        .textContent =
+        score;
+
+
+    document
+        .getElementById("correct-result")
+        .textContent =
+        correctAnswers;
+
+
+    document
+        .getElementById("wrong-result")
+        .textContent =
+        wrongAnswers;
+
+
+    document
+        .getElementById("timeout-result")
+        .textContent =
+        timeouts;
+
+
+    document
+        .getElementById("accuracy-result")
+        .textContent =
+        accuracy + "%";
+
+
+    hideAllScreens();
+
+
+    document
+        .getElementById("result-screen")
+        .classList.remove(
+            "hidden"
+        );
+
+}
+
+
+/* ==========================================
+   QUIT QUIZ
+========================================== */
+
+function quitQuiz() {
+
+    clearInterval(timerInterval);
+
+
+    const confirmQuit =
+        confirm(
+            "Are you sure you want to quit the quiz?"
+        );
+
+
+    if (confirmQuit) {
+
+        returnHome();
+
     }
 
-
-    .logo {
-        width: 40px;
-        height: 40px;
-    }
+}
 
 
-    .score-box {
-        padding: 8px 15px;
-    }
+/* ==========================================
+   RETURN HOME
+========================================== */
+
+function returnHome() {
+
+    clearInterval(timerInterval);
 
 
-    .quiz-top {
-        padding: 13px 5px;
-    }
+    currentQuestion = 0;
+
+    score = 0;
+
+    failures = 0;
 
 
-    .quiz-top strong {
-        font-size: 14px;
-    }
+    document
+        .getElementById("score")
+        .textContent =
+        "0";
+
+
+    hideAllScreens();
+
+
+    document
+        .getElementById("home-screen")
+        .classList.remove(
+            "hidden"
+        );
 
 }
